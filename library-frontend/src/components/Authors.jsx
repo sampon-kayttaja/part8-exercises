@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from '@apollo/client/react'
 import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 
-const Authors = ({ show }) => {
+const Authors = ({ show, token }) => {
   const { data } = useQuery(ALL_AUTHORS)
   const authors = data?.allAuthors || []
 
@@ -36,31 +36,35 @@ const Authors = ({ show }) => {
           ))}
         </tbody>
       </table>
-      <h3>Edit Author</h3>
-      <form onSubmit={(event) => {
-        event.preventDefault()
-        const name = event.target.name.value
-        const setBornTo = parseInt(event.target.setBornTo.value)
-        handleEditAuthor(name, setBornTo)
-      }}>
+      {token && (
         <div>
-          <label>
-            Name:
-            <select name="name">
-              {authors.map((a) => (
-                <option key={a.name} value={a.name}>{a.name}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>
-            Born:
-            <input type="number" name="setBornTo" />
-          </label>
-        </div>
-        <button type="submit">Update Author</button>
-      </form>
+          <h3>Set birthyear</h3>
+          <form onSubmit={(event) => {
+            event.preventDefault()
+            const name = event.target.name.value
+            const setBornTo = parseInt(event.target.setBornTo.value)
+          handleEditAuthor(name, setBornTo)
+        }}>
+          <div>
+            <label>
+              Name:
+              <select name="name">
+                {authors.map((a) => (
+                  <option key={a.name} value={a.name}>{a.name}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>
+              Born:
+              <input type="number" name="setBornTo" />
+            </label>
+          </div>
+          <button type="submit">Update Author</button>
+        </form>
+      </div>
+      )}
     </div>
   )
 }

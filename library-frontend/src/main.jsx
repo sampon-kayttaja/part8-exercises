@@ -4,33 +4,23 @@ import App from './App.jsx'
 
 import { ApolloClient, gql, HttpLink, InMemoryCache } from '@apollo/client'
 import { ApolloProvider } from '@apollo/client/react'
+import { SetContextLink } from '@apollo/client/link/context'
 
-const client = new ApolloClient({
-  link: new HttpLink({
-    uri: 'http://localhost:4000',
-  }),
-  cache: new InMemoryCache(),
-})
-
-const query = gql`
-  query {
-    bookCount
-    authorCount
-    allBooks {
-      title
-      author
-      published
-    }
-    allAuthors {
-      name
-      born
-      bookCount
+const authLink  = new SetContextLink(({ headers }) => {
+  const token = localStorage.getItem('library-user-token')
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : null,
     }
   }
-`
+})
 
-client.query({ query }).then((response) => {
-  console.log(response.data)
+const httpLink = new HttpLink({ uri: 'http://localhost:4000' })
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink)
 })
 
 createRoot(document.getElementById('root')).render(

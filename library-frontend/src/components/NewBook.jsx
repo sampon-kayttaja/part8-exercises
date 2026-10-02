@@ -10,12 +10,8 @@ const NewBook = ({ show }) => {
   const [genres, setGenres] = useState([])
 
   const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
+    refetchQueries: [{ query: ALL_BOOKS, variables: { genre: null } }, { query: ALL_AUTHORS }]
   })
-
-  if (!show) {
-    return null
-  }
 
   const submit = async (event) => {
     event.preventDefault()
@@ -34,42 +30,56 @@ const NewBook = ({ show }) => {
     setGenre('')
   }
 
+  if (!show) {
+    return null
+  }
+
   return (
     <div>
       <form onSubmit={submit}>
         <div>
-          title
+          <label htmlFor="title">Title</label>
           <input
+            id="title"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
+
         <div>
-          author
+          <label htmlFor="author">Author</label>
           <input
+            id="author"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
+
         <div>
-          published
+          <label htmlFor="published">Published</label>
           <input
+            id="published"
             type="number"
             value={published}
             onChange={({ target }) => setPublished(target.value)}
           />
         </div>
+
         <div>
+          <label htmlFor="genre">Genre</label>
           <input
+            id="genre"
             value={genre}
             onChange={({ target }) => setGenre(target.value)}
           />
           <button onClick={addGenre} type="button">
-            add genre
+            Add genre
           </button>
         </div>
-        <div>genres: {genres.join(' ')}</div>
-        <button type="submit">create book</button>
+
+        <div>Genres: {genres.join(' ')}</div>
+
+        <button type="submit">Create book</button>
       </form>
     </div>
   )
