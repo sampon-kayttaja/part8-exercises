@@ -1,9 +1,13 @@
-const Books = (props) => {
-  if (!props.show) {
+import { useQuery } from '@apollo/client/react'
+import { ALL_BOOKS } from '../queries'
+
+const Books = ({ show }) => {
+  if (!show) {
     return null
   }
 
-  const books = []
+  const { data } = useQuery(ALL_BOOKS)
+  const books = data?.allBooks || []
 
   return (
     <div>
@@ -17,7 +21,7 @@ const Books = (props) => {
             <th>published</th>
           </tr>
           {books.map((a) => (
-            <tr key={a.id}>
+            <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author}</td>
               <td>{a.published}</td>
