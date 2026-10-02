@@ -3,6 +3,7 @@ const typeDefs = /* GraphQL */ `
     name: String!
     born: Int
     bookCount: Int!
+    id: ID!
   }
 
   type Book {
@@ -48,7 +49,6 @@ const typeDefs = /* GraphQL */ `
     ): Author
     createUser(
       username: String!
-      password: String!
       favoriteGenre: String!
     ): User
     login(

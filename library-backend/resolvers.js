@@ -3,7 +3,6 @@ const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
 
 const resolvers = {
   Query: {
@@ -102,19 +101,9 @@ const resolvers = {
       return author
     },
     createUser: async (root, args) => {
-      if (args.password.length < 3) {
-        throw new GraphQLError('Password must be at least 3 characters long', {
-          extensions: { code: 'BAD_USER_INPUT', invalidArgs: 'password' },
-        })
-      }
-      const passwordHash = await bcrypt.hash(args.password, 10)
-      const user = new User({
-        username: args.username, 
-        passwordHash,
-        favoriteGenre: args.favoriteGenre
-      })
+      const user = new User({ username: args.username , favoriteGenre: args.favoriteGenre })
 
-      return await user.save()
+      return user.save()
         .catch(error => {
           throw new GraphQLError(`Creating the user failed: ${error.message}`, {
             extensions: {
@@ -127,16 +116,15 @@ const resolvers = {
     },
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username })
-      const passwordCorrect = user === null
-        ? false
-        : await bcrypt.compare(args.password, user.passwordHash)
 
-      if (!(user && passwordCorrect)) {
-        throw new GraphQLError('Invalid username or password', {
-          extensions: { code: 'BAD_USER_INPUT' },
-        })
+      if ( !user || args.password !== 'secret' ) {
+        throw new GraphQLError('wrong credentials', {
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })        
       }
-      
+
       const userForToken = {
         username: user.username,
         id: user._id,
